@@ -31,6 +31,42 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 
 def score(dice)
   # You need to write this method
+  final_values = []
+  repeated = dice.select {|e| dice.count(e) > 2}
+  if repeated.count > 3
+    final_values = evaluate_uno_and_five(repeated[3..repeated.length])
+  end
+  score_repeated = set_of_three_numbers_score(repeated)
+  final_values << evaluate_uno_and_five(dice - repeated)   
+  score_uno_and_five(final_values.flatten).to_i + score_repeated.to_i
+end
+def score_uno_and_five(arr)
+  if arr.count > 0
+   new_arr = arr.map do |a| 
+      if a.eql?(1) 
+        a * 100
+      elsif a.eql?(5) 
+        a * 10
+      end
+    end
+    new_arr.compact.inject(:+)
+  else
+    0
+  end
+end
+def set_of_three_numbers_score(repeated)
+  if repeated.count > 0
+    repeated[0].eql?(1) ? 1000 : repeated[0] * 100 
+  else
+    0
+  end
+end
+def evaluate_uno_and_five(arr)
+  if arr.count > 0
+    arr.select {|e| e.eql?(1) || e.eql?(5)}
+  else
+    0
+  end
 end
 
 class AboutScoringProject < Neo::Koan
